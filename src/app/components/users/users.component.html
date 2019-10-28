@@ -1,0 +1,14 @@
+<h2 class="text-center">Users</h2>
+<ul *ngIf="loaded && users?.length > 0">
+    <li class="card card-body mb-2" *ngFor="let user of users">
+        <h3>{{user.firstName}} {{user.lastName}}</h3>
+        <ul class="list-group" *ngIf="showExtended && user.address && user.age">
+            <li class="list-group-item">Age : {{user.age}}</li>
+            <li class="list-group-item">Address : {{user.address.street}} {{user.address.city}}{{user.address.state}}
+            </li>
+        </ul>
+    </li>
+</ul>
+<!-- <ng-template #noUsers><h4>No Users Found..</h4></ng-template> -->
+<h3 *ngIf="users?.length == 0">No User Found..</h3>
+<h3 *ngIf="!loaded">Loading Users...</h3>
