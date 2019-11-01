@@ -1,32 +1,48 @@
 <button (click)="showUserForm=!showUserForm" class="btn btn-dark mb-3">Add User</button>
 <div class="card card-body mb-3" *ngIf="showUserForm">
   <h2>Add User</h2>
-  <form (submit)="onSubmit($event)">
+  <form #userForm="ngForm" (ngSubmit)="onSubmit(userForm)">
+
     <div class="form-group">
       <label>First Name</label>
-      <input [(ngModel)]="user.firstName" type="text" class="form-control" name="firstName">
+      <input [(ngModel)]="user.firstName" #userFirstName="ngModel" type="text" class="form-control"
+        [ngClass]="{'is-invalid':userFirstName.touched && userFirstName.errors}" name="firstName" minlength="2"
+        required>
+      <div class="invalid-feedback" [hidden]="!userFirstName.errors?.required">
+        First name is required
+      </div>
+      <div class="invalid-feedback" [hidden]="!userFirstName.errors?.minlength">
+        Must be atleast 2 characters
+      </div>
     </div>
+
     <div class="form-group">
       <label>Last Name</label>
-      <input [(ngModel)]="user.lastName" type="text" class="form-control" name="lastName">
+      <input [(ngModel)]="user.lastName" #userLastName="ngModel" type="text" class="form-control"
+        [ngClass]="{'is-invalid': userLastName.touched && userLastName.errors}" name="lastName" minlength="2" required>
+      <div class="invalid-feedback" [hidden]="!userLastName.errors?.required">
+        Last Name is required
+      </div>
+      <div class="invalid-feedback" [hidden]="!userLastName.errors?.minlength">
+        Must be atleast 2 characters
+      </div>
     </div>
+
     <div class="form-group">
-      <label>Age</label>
-      <input [(ngModel)]="user.age" type="number" class="form-control" name="age">
+      <label>Email</label>
+      <input [(ngModel)]="user.email" type="email" class="form-control" name="email"
+        [ngClass]="{'is-invalid' : userEmail.errors && userEmail.touched}" #userEmail="ngModel"
+        pattern="[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?"
+        required>
+      <div class="invalid-feedback" [hidden]="!userEmail.errors?.required">
+        Email is required
+      </div>
+      <div class="invalid-feedback" [hidden]="!userEmail.errors?.pattern">
+        Email is not valid
+      </div>
     </div>
-    <div class="form-group">
-      <label>Street</label>
-      <input [(ngModel)]="user.address.street" type="text" class="form-control" name="street">
-    </div>
-    <div class="form-group">
-      <label>City</label>
-      <input type="text" [(ngModel)]="user.address.city" class="form-control" name="city">
-    </div>
-    <div class="form-group">
-      <label>State</label>
-      <input type="text" [(ngModel)]="user.address.state" class="form-control" name="state">
-    </div>
-    <button (click)="addUser()" [disabled]="user.firstName=='' && user.lastName==''" class="btn btn-block mb-3">Add New
+
+    <button [disabled]="!userForm.form.valid" class="btn btn-block mb-3">Add New
       User</button>
   </form>
 
@@ -36,14 +52,10 @@
     *ngFor="let user of users">
     <!-- <img src="{{user.image}}" *ngIf="user.image" class="img-fluid" alt=""> -->
     <!-- <img bind-src="user.image" *ngIf="user.image" class="img-fluid" alt=""> -->
-    <h3 [ngStyle]="currentStyles">{{user.firstName }} {{user.lastName}} <small *ngIf="user.address && user.age "><button
-          class="btn btn-dark btn-sm" (click)="toggleHide(user)"> <i
-            [ngClass]="user.hide ? 'fa fa-plus' : 'fa fa-minus'"></i></button></small></h3>
-    <ul class="list-group" *ngIf="!user.hide && user.address && user.age">
-      <li class="list-group-item">Age : {{user.age}}</li>
-      <li class="list-group-item">Address : {{user.address.street}}
-        {{user.address.city}}{{user.address.state}}
-      </li>
+    <h3 [ngStyle]="currentStyles">{{user.firstName }} {{user.lastName}} <small><button class="btn btn-dark btn-sm"
+          (click)="toggleHide(user)"> <i [ngClass]="user.hide ? 'fa fa-plus' : 'fa fa-minus'"></i></button></small></h3>
+    <ul class="list-group" *ngIf="!user.hide">
+      <li class="list-group-item">Email : {{user.email}}</li>
       <li class="list-group-item">Joined : {{user.registered | date:"short"}}</li>
     </ul>
   </li>

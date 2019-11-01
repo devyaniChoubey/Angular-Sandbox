@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { User } from 'src/app/models/User';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-users',
@@ -11,67 +12,30 @@ export class UsersComponent implements OnInit {
   user: User = {
     firstName: '',
     lastName: '',
-    age: null,
-    address: {
-      street: '',
-      city: '',
-      state: ''
-    }
-  }
+    email: ''
+  };
+
   users: User[];
-  showExtended: boolean = true;
+  //showExtended: boolean = true;
   loaded: boolean = false;
   enableAdd: boolean = false;
   currentClasses = {};
   currentStyles = {};
   showUserForm: boolean = false;
-  constructor() { }
+  date: any;
+  @ViewChild('userForm') form: any;
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
+    this.userService.getData().subscribe(data => {
+      console.log(data);
+    });
+    this.userService.getUser().subscribe(users => {
+      this.users = users;
+      this.loaded = true;
+    })
 
-    this.users = [
-      {
-        firstName: 'John',
-        lastName: 'Doe',
-        age: 19,
 
-        address: {
-          street: 'Main Road',
-          city: 'Boston',
-          state: 'MA'
-        },
-        isActive: true,
-        registered: new Date('01/01/2018 08:30:00'),
-        hide: true
-
-      }, {
-        firstName: 'Kevin',
-        lastName: 'Johnson',
-        age: 20,
-
-        address: {
-          street: 'Back Road',
-          city: 'Paris',
-          state: 'France'
-        },
-
-        registered: new Date('01/05/2017 06:30:00')
-      },
-      {
-        firstName: 'Serena',
-        lastName: 'Williams',
-        age: 25,
-        address: {
-          street: 'Lincon Road',
-          city: 'NewYork',
-          state: 'America'
-        },
-        isActive: true,
-        registered: new Date('01/06/2016 07:30:00')
-      }
-
-    ]
-    this.loaded = true;
 
     // this.addUser({
     //   firstName: 'Jack',
@@ -89,12 +53,8 @@ export class UsersComponent implements OnInit {
     this.user = {
       firstName: '',
       lastName: '',
-      age: null,
-      address: {
-        street: '',
-        city: '',
-        state: ''
-      }
+      email: ''
+
     }
 
   }
@@ -102,14 +62,14 @@ export class UsersComponent implements OnInit {
   setCurrentClasses() {
     this.currentClasses = {
       'btn-sucess': this.enableAdd,
-      'big-text': this.showExtended
+      //'big-text': this.showExtended
     }
   }
 
   setCurrentStyles() {
     this.currentStyles = {
-      'padding-top': this.showExtended ? '0' : '40px',
-      'font-size': this.showExtended ? '' : '60px'
+      //'padding-top': this.showExtended ? '0' : '40px',
+      //'font-size': this.showExtended ? '' : '60px'
 
     }
   }
@@ -118,9 +78,17 @@ export class UsersComponent implements OnInit {
     user.hide = !user.hide;
   }
 
-  onSubmit(e) {
-    console.log(123);
-    e.preventDefault();
+  onSubmit({ value, valid }: { value: User, valid: boolean }) {
+    if (!valid) {
+      console.log('Form is not valid')
+    } else {
+      value.isActive = true;
+      value.registered = new Date();
+      value.hide = true;
+
+      this.userService.addUser(value);
+      this.form.reset();
+    }
   }
 
   fireEvent(e) {
